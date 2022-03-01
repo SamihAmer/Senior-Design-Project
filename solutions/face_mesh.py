@@ -35,6 +35,7 @@ from mediapipe.calculators.util import logic_calculator_pb2
 from mediapipe.calculators.util import non_max_suppression_calculator_pb2
 from mediapipe.calculators.util import rect_transformation_calculator_pb2
 from mediapipe.calculators.util import thresholding_calculator_pb2
+from mediapipe.calculators.util import landmarks_smoothing_calculator_pb2
 # pylint: enable=unused-import
 from mediapipe.python.solution_base import SolutionBase
 # pylint: disable=unused-import
@@ -67,7 +68,7 @@ class FaceMesh(SolutionBase):
   """
 
   def __init__(self,
-               static_image_mode=False,
+               static_image_mode=True,
                max_num_faces=1,
                refine_landmarks=True,
                min_detection_confidence=0.5,

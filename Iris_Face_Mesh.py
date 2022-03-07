@@ -104,20 +104,20 @@ with mp_face_mesh.FaceMesh(min_detection_confidence = 0.8,       #initializing d
                 # eye_landmarks = OrderedDict([("right eye"))
 
 
-                # for id, lm in enumerate(face_landmarks.landmark):
-                #
-                #     x,y = int(lm.x*w), int(lm.y*h)
-                #     # cv2.putText(image, str(id), (x,y), cv2.FONT_HERSHEY_PLAIN, 0.4, (0, 255, 0), 1 )
-                #     cx, cy = int(lm.x * w), int(lm.y * h)
-                #     if cx < cx_min:
-                #         cx_min = cx
-                #     if cy < cy_min:
-                #         cy_min = cy
-                #     if cx > cx_max:
-                #         cx_max = cx
-                #     if cy > cy_max:
-                #         cy_max = cy
-                # cv2.rectangle(image, (cx_min, cy_min), (cx_max, cy_max), (255, 255, 0), 2)
+                for id, lm in enumerate(face_landmarks.landmark):
+
+                    x,y = int(lm.x*w), int(lm.y*h)
+                    # cv2.putText(image, str(id), (x,y), cv2.FONT_HERSHEY_PLAIN, 0.4, (0, 255, 0), 1 )
+                    cx, cy = int(lm.x * w), int(lm.y * h)
+                    if cx < cx_min:
+                        cx_min = cx
+                    if cy < cy_min:
+                        cy_min = cy
+                    if cx > cx_max:
+                        cx_max = cx
+                    if cy > cy_max:
+                        cy_max = cy
+                cv2.rectangle(image, (cx_min, cy_min), (cx_max, cy_max), (255, 255, 0), 2)
                 #
                 # # print(cx_min, cy_min, cx_max, cy_max)
                 # print(id, lm)
@@ -130,7 +130,7 @@ with mp_face_mesh.FaceMesh(min_detection_confidence = 0.8,       #initializing d
                 loc_x = int(face_landmarks.landmark[idx].x * image.shape[1])
                 loc_y = int(face_landmarks.landmark[idx].y * image.shape[0])
                 #print("Right location", face_landmarks.landmark[idx].x, face_landmarks.landmark[idx].y)
-                x = face_landmarks.landmark[151].x
+                x = face_landmarks.landmark[168].x
                 y = face_landmarks.landmark[151].y
                 rel_x = x - face_landmarks.landmark[idx].x
                 rel_y = y - face_landmarks.landmark[idx].y
@@ -153,7 +153,7 @@ with mp_face_mesh.FaceMesh(min_detection_confidence = 0.8,       #initializing d
                 #for idx2 in landmarks_list2:
                 loc_x2 = int(face_landmarks.landmark[idx2].x * image.shape[1])
                 loc_y2 = int(face_landmarks.landmark[idx2].y * image.shape[0])
-                x2 = face_landmarks.landmark[151].x
+                x2 = face_landmarks.landmark[168].x
                 y2 = face_landmarks.landmark[151].y
                 rel_x2 = x2 - face_landmarks.landmark[idx2].x
                 rel_y2 = y2 - face_landmarks.landmark[idx2].y

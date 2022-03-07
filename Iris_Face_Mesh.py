@@ -1,4 +1,4 @@
-
+import math
 import cv2   #Library to access webcam and video
 import mediapipe as mp   # library for face mesh
 import numpy as np  # library for mathematical computation, we'll use this for ML
@@ -25,7 +25,8 @@ video = cv2.VideoCapture(0)      # using opencv to access camera with VideoCaptu
 # video.set(3, 640)    # width
 # video.set(4, 1000)    # height
 # video.set(10, 100)   # brightness
-
+arr = []
+rightmvmnt = []
 
 
 with mp_face_mesh.FaceMesh(min_detection_confidence = 0.8,       #initializing detection confidences of face_mesh
@@ -103,49 +104,66 @@ with mp_face_mesh.FaceMesh(min_detection_confidence = 0.8,       #initializing d
                 # eye_landmarks = OrderedDict([("right eye"))
 
 
-                for id, lm in enumerate(face_landmarks.landmark):
-
-                    x,y = int(lm.x*w), int(lm.y*h)
-                    # cv2.putText(image, str(id), (x,y), cv2.FONT_HERSHEY_PLAIN, 0.4, (0, 255, 0), 1 )
-                    cx, cy = int(lm.x * w), int(lm.y * h)
-                    if cx < cx_min:
-                        cx_min = cx
-                    if cy < cy_min:
-                        cy_min = cy
-                    if cx > cx_max:
-                        cx_max = cx
-                    if cy > cy_max:
-                        cy_max = cy
-                cv2.rectangle(image, (cx_min, cy_min), (cx_max, cy_max), (255, 255, 0), 2)
-
-                # print(cx_min, cy_min, cx_max, cy_max)
-                print(id, lm)
+                # for id, lm in enumerate(face_landmarks.landmark):
+                #
+                #     x,y = int(lm.x*w), int(lm.y*h)
+                #     # cv2.putText(image, str(id), (x,y), cv2.FONT_HERSHEY_PLAIN, 0.4, (0, 255, 0), 1 )
+                #     cx, cy = int(lm.x * w), int(lm.y * h)
+                #     if cx < cx_min:
+                #         cx_min = cx
+                #     if cy < cy_min:
+                #         cy_min = cy
+                #     if cx > cx_max:
+                #         cx_max = cx
+                #     if cy > cy_max:
+                #         cy_max = cy
+                # cv2.rectangle(image, (cx_min, cy_min), (cx_max, cy_max), (255, 255, 0), 2)
+                #
+                # # print(cx_min, cy_min, cx_max, cy_max)
+                # print(id, lm)
 
                 #RIGHT IRIS
-                landmarks_list = [468]
-                for idx in landmarks_list:
-                    loc_x = int(face_landmarks.landmark[idx].x * image.shape[1])
-                    loc_y = int(face_landmarks.landmark[idx].y * image.shape[0])
-                    # print("Right location", loc_x, loc_y)
-                    data = {'xcoord': loc_x, 'ycoord:': loc_y}
-                   # graphdata = [loc_x, loc_y]     for potential graph usage
-                    with open('RIGHT_IRIS.json', 'a') as f: json.dump(data, f, indent=2)
-                  #  with open('graphdata1.json', 'a') as f: json.dump(graphdata, f, indent=2)    potential graph application
-                    cv2.circle(image, (loc_x, loc_y), 2, (255, 255, 255), 2)
+                idx = 468 #4 IS NOSE
+
+                time = [0]
+                #for idx in landmarks_list:
+                loc_x = int(face_landmarks.landmark[idx].x * image.shape[1])
+                loc_y = int(face_landmarks.landmark[idx].y * image.shape[0])
+                #print("Right location", face_landmarks.landmark[idx].x, face_landmarks.landmark[idx].y)
+                x = face_landmarks.landmark[151].x
+                y = face_landmarks.landmark[151].y
+                rel_x = x - face_landmarks.landmark[idx].x
+                rel_y = y - face_landmarks.landmark[idx].y
+                pos = math.sqrt((rel_x**2) + (rel_y**2))
+                arr.append(pos)
+                print("relative location right", pos)
+               # data = {'xcoord': loc_x, 'ycoord:': loc_y}
+               # graphdata = [loc_x, loc_y]     for potential graph usage
+               # with open('RIGHT_IRIS.json', 'a') as f: json.dump(data, f, indent=2)
+              #  with open('graphdata1.json', 'a') as f: json.dump(graphdata, f, indent=2)    potential graph application
+                cv2.circle(image, (loc_x, loc_y), 2, (255, 255, 255), 2)
+                #time = np.linspace
 
 
 
 
 
                 #LEFT IRIS
-                landmarks_list2 = [473]
-                for idx2 in landmarks_list2:
-                    loc_x2 = int(face_landmarks.landmark[idx2].x * image.shape[1])
-                    loc_y2 = int(face_landmarks.landmark[idx2].y * image.shape[0])
-                    # print("Left location",loc_x2, loc_y2)
-                    data2 = {'xcoord': loc_x2, 'ycoord:': loc_y2}
-                    with open('LEFT_IRIS.json', 'a') as f: json.dump(data2,f,indent=2)
-                    cv2.circle(image, (loc_x2, loc_y2), 2, (255, 255, 255), 2)
+                idx2 = 473
+                #for idx2 in landmarks_list2:
+                loc_x2 = int(face_landmarks.landmark[idx2].x * image.shape[1])
+                loc_y2 = int(face_landmarks.landmark[idx2].y * image.shape[0])
+                x2 = face_landmarks.landmark[151].x
+                y2 = face_landmarks.landmark[151].y
+                rel_x2 = x2 - face_landmarks.landmark[idx2].x
+                rel_y2 = y2 - face_landmarks.landmark[idx2].y
+                pos2 = math.sqrt((rel_x2 ** 2) + (rel_y2 ** 2))
+                rightmvmnt.append(pos2)
+                print("relative location left", pos2)
+                # print("Left location",loc_x2, loc_y2)
+                # data2 = {'xcoord': loc_x2, 'ycoord:': loc_y2}
+                # with open('LEFT_IRIS.json', 'a') as f: json.dump(data2,f,indent=2)
+                cv2.circle(image, (loc_x2, loc_y2), 2, (255, 255, 255), 2)
 
 
 
@@ -154,8 +172,28 @@ with mp_face_mesh.FaceMesh(min_detection_confidence = 0.8,       #initializing d
         cv2.imshow("Face Mesh", image)
         k = cv2.waitKey(1)
         if k == ord('q'):
+            time1 = np.linspace(0,len(arr),num=len(arr))
+            time2 = np.linspace(0,len(rightmvmnt), num = len(rightmvmnt))
+            fig1 = plt.figure("Left Eye Movements")
+            plt.plot(time1, arr, c = "black", lw = 2)
+            plt.title("Left Eye Movements")
+            plt.savefig("Left Eye Graph", format="png")
+            fig2 = plt.figure("Right Eye Figure")
+            plt.plot(time2, rightmvmnt, c = "red", lw = 2)
+            plt.title("Right Eye Figure")
+            plt.savefig("Right Eye Graph", format = "png")
+            plt.show()
+            # fig, axs = plt.subplots(2)
+            # fig.suptitle("Left vs. Right Eye Movements Over Elapsed Frame Rate")
+            # axs[0].plot(time, arr)
+            # axs[1].plt(time, rightmvmnt)
+
             break
+
     video.release()
+    # plt.plot(time, arr)
+    # plt.savefig("bob.png", format=png)
+    # plt.show()
     cv2.destroyAllWindows()
 
 

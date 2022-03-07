@@ -26,7 +26,7 @@ video = cv2.VideoCapture(0)      # using opencv to access camera with VideoCaptu
 # video.set(4, 1000)    # height
 # video.set(10, 100)   # brightness
 arr = []
-rightmvmnt = []
+leftmvmnt = []
 
 
 with mp_face_mesh.FaceMesh(min_detection_confidence = 0.8,       #initializing detection confidences of face_mesh
@@ -130,7 +130,7 @@ with mp_face_mesh.FaceMesh(min_detection_confidence = 0.8,       #initializing d
                 loc_x = int(face_landmarks.landmark[idx].x * image.shape[1])
                 loc_y = int(face_landmarks.landmark[idx].y * image.shape[0])
                 #print("Right location", face_landmarks.landmark[idx].x, face_landmarks.landmark[idx].y)
-                x = face_landmarks.landmark[168].x
+                x = face_landmarks.landmark[151].x  #Must find a way to compensate for depth as well
                 y = face_landmarks.landmark[151].y
                 rel_x = x - face_landmarks.landmark[idx].x
                 rel_y = y - face_landmarks.landmark[idx].y
@@ -153,12 +153,12 @@ with mp_face_mesh.FaceMesh(min_detection_confidence = 0.8,       #initializing d
                 #for idx2 in landmarks_list2:
                 loc_x2 = int(face_landmarks.landmark[idx2].x * image.shape[1])
                 loc_y2 = int(face_landmarks.landmark[idx2].y * image.shape[0])
-                x2 = face_landmarks.landmark[168].x
+                x2 = face_landmarks.landmark[151].x
                 y2 = face_landmarks.landmark[151].y
                 rel_x2 = x2 - face_landmarks.landmark[idx2].x
                 rel_y2 = y2 - face_landmarks.landmark[idx2].y
                 pos2 = math.sqrt((rel_x2 ** 2) + (rel_y2 ** 2))
-                rightmvmnt.append(pos2)
+                leftmvmnt.append(pos2)
                 print("relative location left", pos2)
                 # print("Left location",loc_x2, loc_y2)
                 # data2 = {'xcoord': loc_x2, 'ycoord:': loc_y2}
@@ -173,15 +173,20 @@ with mp_face_mesh.FaceMesh(min_detection_confidence = 0.8,       #initializing d
         k = cv2.waitKey(1)
         if k == ord('q'):
             time1 = np.linspace(0,len(arr),num=len(arr))
-            time2 = np.linspace(0,len(rightmvmnt), num = len(rightmvmnt))
-            fig1 = plt.figure("Left Eye Movements")
+            time2 = np.linspace(0,len(leftmvmnt), num = len(leftmvmnt))
+            t = 0
+            # for i in arr:
+            #     #data1 = {'frame': t, 'eye_pos:': arr}
+            #     with open('LEFT_EYE.json', 'a') as f: json.dump(time1, i, f, indent=2)
+            #     t = t+1
+            fig1 = plt.figure("Right Eye Movements")
             plt.plot(time1, arr, c = "black", lw = 2)
-            plt.title("Left Eye Movements")
-            plt.savefig("Left Eye Graph", format="png")
-            fig2 = plt.figure("Right Eye Figure")
-            plt.plot(time2, rightmvmnt, c = "red", lw = 2)
-            plt.title("Right Eye Figure")
-            plt.savefig("Right Eye Graph", format = "png")
+            plt.title("Right Eye Movements")
+            plt.savefig("Right Eye Graph", format="png")
+            fig2 = plt.figure("Left Eye Figure")
+            plt.plot(time2, leftmvmnt, c = "red", lw = 2)
+            plt.title("Left Eye Figure")
+            plt.savefig("Left Eye Graph", format = "png")
             plt.show()
             # fig, axs = plt.subplots(2)
             # fig.suptitle("Left vs. Right Eye Movements Over Elapsed Frame Rate")

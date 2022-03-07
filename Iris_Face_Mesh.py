@@ -174,11 +174,11 @@ with mp_face_mesh.FaceMesh(min_detection_confidence = 0.8,       #initializing d
         cv2.imshow("Face Mesh", image)
         k = cv2.waitKey(1)
         if k == ord('q'):
-            time1 = np.linspace(0,len(arr),num=len(arr))
-            time2 = np.linspace(0,len(leftmvmnt), num = len(leftmvmnt))
-            df = pd.DataFrame({"frame_number" : time1, "eye_position" : arr})
+            time1 = np.linspace(1,len(arr),num=len(arr)) #Frame rate refreshes 15 rates per second
+            time2 = np.linspace(1,len(leftmvmnt), num = len(leftmvmnt))
+            df = pd.DataFrame({"refresh" : time1, "eye_position" : arr})
             df.to_csv("right_eye.csv", index=False)
-            df2 = pd.DataFrame({"frame_number" : time2, "eye_position" : leftmvmnt})
+            df2 = pd.DataFrame({"refresh" : time2, "eye_position" : leftmvmnt})
             df2.to_csv("left_eye.csv", index=False)
             fig1 = plt.figure("Right Eye Movements")
             plt.plot(time1, arr, c = "black", lw = 2)

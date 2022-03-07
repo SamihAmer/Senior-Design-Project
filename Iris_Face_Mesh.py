@@ -5,9 +5,9 @@ import numpy as np  # library for mathematical computation, we'll use this for M
 import json  # to output .json files and work with .json format
 import matplotlib.pyplot as plt   # for plotting eventually
 import csv  # could output as a .csv file
-import pandas # pandas is a data structuring library. Makes dataframes to use data
+import pandas as pd
 
-mp.calculators.util.landmarks_smoothing_calculator_pb2
+#mp.calculators.util.landmarks_smoothing_calculator_pb2
 
 mp_drawing = mp.solutions.drawing_utils       #using drawing utils mediapipe solution to draw
 mp_face_mesh = mp.solutions.face_mesh         #using face_mesh mediapipe solution to apply face mesh
@@ -15,6 +15,7 @@ mp_drawing_syles = mp.solutions.drawing_styles  # this just lets us get fancy wi
 
 
 mp_face_mesh.landmarks_refinement_calculator_pb2
+mp_face_mesh.landmarks_smoothing_calculator_pb2
 
 
 #specifications of face mesh drawing ( WE DONT WANT TO DRAW THE WHOLE FACE MESH SO THIS IS POINTLESS)
@@ -175,8 +176,10 @@ with mp_face_mesh.FaceMesh(min_detection_confidence = 0.8,       #initializing d
         if k == ord('q'):
             time1 = np.linspace(0,len(arr),num=len(arr))
             time2 = np.linspace(0,len(leftmvmnt), num = len(leftmvmnt))
-            t = 0
-            data1 = {}    #aaaaaaaaaaaaAAAA
+            df = pd.DataFrame({"frame_number" : time1, "eye_position" : arr})
+            df.to_csv("right_eye.csv", index=False)
+            df2 = pd.DataFrame({"frame_number" : time2, "eye_position" : leftmvmnt})
+            df2.to_csv("left_eye.csv", index=False)
             fig1 = plt.figure("Right Eye Movements")
             plt.plot(time1, arr, c = "black", lw = 2)
             plt.title("Right Eye Movements")

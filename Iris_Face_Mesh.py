@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt   # for plotting eventually
 import csv  # could output as a .csv file
 import pandas # pandas is a data structuring library. Makes dataframes to use data
 
+mp.calculators.util.landmarks_smoothing_calculator_pb2
 
 mp_drawing = mp.solutions.drawing_utils       #using drawing utils mediapipe solution to draw
 mp_face_mesh = mp.solutions.face_mesh         #using face_mesh mediapipe solution to apply face mesh
@@ -175,10 +176,7 @@ with mp_face_mesh.FaceMesh(min_detection_confidence = 0.8,       #initializing d
             time1 = np.linspace(0,len(arr),num=len(arr))
             time2 = np.linspace(0,len(leftmvmnt), num = len(leftmvmnt))
             t = 0
-            # for i in arr:
-            #     #data1 = {'frame': t, 'eye_pos:': arr}
-            #     with open('LEFT_EYE.json', 'a') as f: json.dump(time1, i, f, indent=2)
-            #     t = t+1
+            data1 = {}    #aaaaaaaaaaaaAAAA
             fig1 = plt.figure("Right Eye Movements")
             plt.plot(time1, arr, c = "black", lw = 2)
             plt.title("Right Eye Movements")

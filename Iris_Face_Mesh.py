@@ -6,6 +6,9 @@ import json  # to output .json files and work with .json format
 import matplotlib.pyplot as plt   # for plotting eventually
 import csv  # could output as a .csv file
 import pandas as pd
+import bottleneck as bn
+import time
+
 
 #mp.calculators.util.landmarks_smoothing_calculator_pb2
 
@@ -28,11 +31,17 @@ video = cv2.VideoCapture(0)      # using opencv to access camera with VideoCaptu
 # video.set(4, 1000)    # height
 # video.set(10, 100)   # brightness
 arr = []
-leftmvmnt = []
+leftmvmnt_L = []
+leftmvmnt_R = []
+rightmvmnt_L = []
+rightmvmnt_R = []
+def rollavg_bottlneck(a,n): #moving average: https://www.delftstack.com/howto/python/moving-average-python/
+    return bn.move_mean(a, window=n,min_count = None)
+start = time.time()
 
 
-with mp_face_mesh.FaceMesh(min_detection_confidence = 0.8,       #initializing detection confidences of face_mesh
-                           min_tracking_confidence= 0.8) as face_mesh:
+with mp_face_mesh.FaceMesh(min_detection_confidence = 0.9,       #initializing detection confidences of face_mesh
+                           min_tracking_confidence= 0.9) as face_mesh:
 
 
     # while loop to capture video, draw facemesh landmarks
@@ -125,24 +134,25 @@ with mp_face_mesh.FaceMesh(min_detection_confidence = 0.8,       #initializing d
                 # print(id, lm)
 
                 #RIGHT IRIS
-                idx = 468 #4 IS NOSE
-
-                time = [0]
-                #for idx in landmarks_list:
+                idx = 468 #4 IS NOSE   468
+                # 133 left right eye
+                # 33 is right right eye
                 loc_x = int(face_landmarks.landmark[idx].x * image.shape[1])
                 loc_y = int(face_landmarks.landmark[idx].y * image.shape[0])
-                #print("Right location", face_landmarks.landmark[idx].x, face_landmarks.landmark[idx].y)
-                x = face_landmarks.landmark[151].x  #Must find a way to compensate for depth as well
-                y = face_landmarks.landmark[151].y
-                rel_x = x - face_landmarks.landmark[idx].x
-                rel_y = y - face_landmarks.landmark[idx].y
-                pos = math.sqrt((rel_x**2) + (rel_y**2))
-                arr.append(pos)
-                print("relative location right", pos)
-               # data = {'xcoord': loc_x, 'ycoord:': loc_y}
-               # graphdata = [loc_x, loc_y]     for potential graph usage
-               # with open('RIGHT_IRIS.json', 'a') as f: json.dump(data, f, indent=2)
-              #  with open('graphdata1.json', 'a') as f: json.dump(graphdata, f, indent=2)    potential graph application
+                r_left_x = face_landmarks.landmark[133].x
+                r_right_x = face_landmarks.landmark[33].x
+                rel_rlx = r_left_x - face_landmarks.landmark[idx].x
+                rel_rrx = r_right_x - face_landmarks.landmark[idx].x
+                # if abs(rel_rrx) > abs(rel_rlx): 
+                #     print("looking left")
+                # elif abs(rel_rrx) < abs(rel_rlx):
+                #     print("looking right")
+                # elif abs(rel_rlx) == abs(rel_rlx):
+                #     print("centered")
+                rightmvmnt_L.append(rel_rlx)
+                rightmvmnt_R.append(rel_rrx)
+                # print("LEFT", rel_rlx)
+                # print("RIGHT", rel_rrx)
                 cv2.circle(image, (loc_x, loc_y), 2, (255, 255, 255), 2)
                 #time = np.linspace
 
@@ -150,56 +160,79 @@ with mp_face_mesh.FaceMesh(min_detection_confidence = 0.8,       #initializing d
 
 
 
-                #LEFT IRIS
+                #LEFT IRIS   473
                 idx2 = 473
-                #for idx2 in landmarks_list2:
+                # left right eye 362
+                # left left eye 263
                 loc_x2 = int(face_landmarks.landmark[idx2].x * image.shape[1])
                 loc_y2 = int(face_landmarks.landmark[idx2].y * image.shape[0])
-                x2 = face_landmarks.landmark[151].x
-                y2 = face_landmarks.landmark[151].y
-                rel_x2 = x2 - face_landmarks.landmark[idx2].x
-                rel_y2 = y2 - face_landmarks.landmark[idx2].y
-                pos2 = math.sqrt((rel_x2 ** 2) + (rel_y2 ** 2))
-                leftmvmnt.append(pos2)
-                print("relative location left", pos2)
-                # print("Left location",loc_x2, loc_y2)
-                # data2 = {'xcoord': loc_x2, 'ycoord:': loc_y2}
-                # with open('LEFT_IRIS.json', 'a') as f: json.dump(data2,f,indent=2)
+                l_right_x = face_landmarks.landmark[362].x
+                l_left_x = face_landmarks.landmark[263].x
+                rel_lrx = l_right_x - face_landmarks.landmark[idx2].x
+                rel_llx = l_left_x - face_landmarks.landmark[idx2].x
+                # if abs(rel_lrx) > abs(rel_llx): #if the distance from the rightmost eye point is greater than the distance from leftmost eye point you are looking left
+                #     print("looking left")
+                # elif abs(rel_lrx) < abs(rel_llx):
+                #     print("looking right")
+                # elif abs(rel_llx) == abs(rel_llx):
+                #     print("centered")
+                leftmvmnt_L.append(rel_llx)
+                leftmvmnt_R.append(rel_lrx)
+                # print("LEFT", rel_llx)
+                # print("RIGHT", rel_lrx)
                 cv2.circle(image, (loc_x2, loc_y2), 2, (255, 255, 255), 2)
 
 
 
                             #display output image
-
+        #DATA NORMALIZATION
         cv2.imshow("Face Mesh", image)
         k = cv2.waitKey(1)
         if k == ord('q'):
-            time1 = np.linspace(1,len(arr),num=len(arr)) #Frame rate refreshes 15 rates per second
-            time2 = np.linspace(1,len(leftmvmnt), num = len(leftmvmnt))
-            df = pd.DataFrame({"refresh" : time1, "eye_position" : arr})
-            df.to_csv("right_eye.csv", index=False)
-            df2 = pd.DataFrame({"refresh" : time2, "eye_position" : leftmvmnt})
-            df2.to_csv("left_eye.csv", index=False)
-            fig1 = plt.figure("Right Eye Movements")
-            plt.plot(time1, arr, c = "black", lw = 2)
-            plt.title("Right Eye Movements")
-            plt.savefig("Right Eye Graph", format="png")
-            fig2 = plt.figure("Left Eye Figure")
-            plt.plot(time2, leftmvmnt, c = "red", lw = 2)
-            plt.title("Left Eye Figure")
-            plt.savefig("Left Eye Graph", format = "png")
+            #ELAPSED TIME CALCULATION
+            end = time.time()
+            elapsed = end-start
+            print("time elapsed: " + str(elapsed))
+            #print(len(leftmvmnt_L), len(leftmvmnt_R), len(rightmvmnt_L), len(rightmvmnt_R))
+            arrlen = len(leftmvmnt_L)
+            t = np.zeros(arrlen)
+            for i in range(0, len(t)):
+                t[i] = elapsed*(i/(arrlen-1))
+            #print(t)
+            #NORMALIZATION IMPLEMENTATION
+            norm1 = np.linalg.norm(rightmvmnt_L)
+            normalizeR_L = rightmvmnt_L/norm1
+            norm2 = np.linalg.norm(rightmvmnt_R)
+            normalizeR_R = rightmvmnt_R/norm2
+            norm3 = np.linalg.norm(leftmvmnt_L) #normalization constant
+            normalizeL_L = leftmvmnt_L/norm3 #normalize
+            norm4 = np.linalg.norm(leftmvmnt_R)
+            normalizeL_R = leftmvmnt_R/norm4
+            #RIGHT PUPIL MOTION CALCULATOR
+            over_all_right = rollavg_bottlneck(normalizeR_L,5) + rollavg_bottlneck(normalizeR_R, 5)
+            df1 = pd.DataFrame({"ELAPSED_SECONDS" : t, "RELATIVE_POSITION" : over_all_right})
+            df1.to_csv("left_pupil_data.csv", index=False)
+            fig1 = plt.figure("Overall Right Eye Movement: Relative Position vs. Time Elapsed (s)")
+            plt.plot(t, over_all_right, c = "black", lw = 2)
+            plt.title("Right Pupil Movements")
+            plt.savefig("RIGHT_PUPIL_MOTION", format = "png")
+            #plt.show()
+            #LEFT PUPIL MOTION CALCULATOR
+            over_all_left = rollavg_bottlneck(normalizeL_L,5) + rollavg_bottlneck(normalizeL_R, 5)
+            df = pd.DataFrame({"ELAPSED_SECONDS" : t, "RELATIVE_POSITION" : over_all_left})
+            df.to_csv("left_pupil_data.csv", index=False)
+
+            fig3 = plt.figure("Overall Left Eye Movement: Relative Position vs. Time Elapsed (s)")
+            plt.plot(t, over_all_left, c = "black", lw = 2)
+            plt.title("Left Pupil Movements")
+            plt.savefig("LEFT_PUPIL_MOTION", format = "png")
             plt.show()
-            # fig, axs = plt.subplots(2)
-            # fig.suptitle("Left vs. Right Eye Movements Over Elapsed Frame Rate")
-            # axs[0].plot(time, arr)
-            # axs[1].plt(time, rightmvmnt)
+            
 
             break
 
     video.release()
-    # plt.plot(time, arr)
-    # plt.savefig("bob.png", format=png)
-    # plt.show()
+    
     cv2.destroyAllWindows()
 
 

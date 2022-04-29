@@ -216,7 +216,7 @@ with mp_face_mesh.FaceMesh(min_detection_confidence = 0.9,       #initializing d
             plt.plot(t, over_all_right, c = "black", lw = 2)
             plt.title("Right Pupil Movements")
             plt.savefig("RIGHT_PUPIL_MOTION", format = "png")
-            #plt.show()
+            
             #LEFT PUPIL MOTION CALCULATOR
             over_all_left = rollavg_bottlneck(normalizeL_L,5) + rollavg_bottlneck(normalizeL_R, 5)
             df = pd.DataFrame({"ELAPSED_SECONDS" : t, "RELATIVE_POSITION" : over_all_left})

@@ -173,6 +173,16 @@ with mp_face_mesh.FaceMesh(min_detection_confidence = 0.9,       #initializing d
             plt.savefig("LEFT_PUPIL_MOTION", format = "png")
             plt.show()
 
+            #Fourier Transform of Unfiltered Data
+            over_all = over_all_right + over_all_left #normalized + moving average
+            bakup = normalizeR_L + normalizeR_R + normalizeL_L + normalizeL_R #normalized
+            bakup2 = rightmvmnt_L + rightmvmnt_R + leftmvmnt_L + leftmvmnt_R #untampered
+            fft = np.fft.fft(bakup2)
+            fftfreq = np.fft.fftfreq(len(bakup2)) #try t
+            print(fft)
+            plt.plot(fftfreq,fft)
+            plt.show()
+
             break
     video.release()
     cv2.destroyAllWindows()

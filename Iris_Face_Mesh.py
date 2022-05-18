@@ -9,7 +9,7 @@ import pandas as pd
 import bottleneck as bn
 import time
 
-fileName = 0 # enter 0 for live video, 'Name of File.mp4' (must be mp4) for pre-recorded video
+fileName = 'KB_Exam2.mp4' # enter 0 for live video, 'Name of File.mp4' for pre-recorded video
 
 mp_drawing = mp.solutions.drawing_utils  # using drawing utils mediapipe solution to draw
 mp_face_mesh = mp.solutions.face_mesh  # using face_mesh mediapipe solution to apply face mesh
@@ -164,7 +164,7 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
             # RIGHT PUPIL MOTION CALCULATOR
             over_all_right = rollavg_bottlneck(normalizeR_L, 5) + rollavg_bottlneck(normalizeR_R, 5)
             df1 = pd.DataFrame({"ELAPSED_SECONDS": t, "RELATIVE_POSITION": over_all_right})
-            df1.to_csv(str(fileName) + "right_pupil_data.csv", index=false)
+            df1.to_csv(str(fileName) + "right_pupil_data.csv", index=False)
             fig1 = plt.figure("Overall Right Eye Movement: Relative Position vs. Time Elapsed (s)")
             plt.plot(t, over_all_right, c="black", lw=2)
             plt.title("Right Pupil Movements")

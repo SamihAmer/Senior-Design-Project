@@ -9,7 +9,7 @@ import pandas as pd
 import bottleneck as bn
 import time
 
-fileName = 0
+fileName = 0 # enter 0 for live video, 'Name of File.mp4' (must be mp4) for pre-recorded video
 
 mp_drawing = mp.solutions.drawing_utils  # using drawing utils mediapipe solution to draw
 mp_face_mesh = mp.solutions.face_mesh  # using face_mesh mediapipe solution to apply face mesh

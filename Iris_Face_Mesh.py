@@ -8,8 +8,15 @@ import csv  # could output as a .csv file
 import pandas as pd
 import bottleneck as bn
 import time
+import glob, os
+import subprocess
+from zipfile import ZipFile
 
-fileName = 'KB_Exam2.mp4' # enter 0 for live video, 'Name of File.mp4' for pre-recorded video
+
+
+
+
+#fileName = 0 # enter 0 for live video, 'Name of File.mp4' (must be mp4) for pre-recorded video
 
 mp_drawing = mp.solutions.drawing_utils  # using drawing utils mediapipe solution to draw
 mp_face_mesh = mp.solutions.face_mesh  # using face_mesh mediapipe solution to apply face mesh
@@ -19,7 +26,10 @@ mp_drawing_syles = mp.solutions.drawing_styles  # this just lets us get fancy wi
 # specifications of face mesh drawing ( WE DONT WANT TO DRAW THE WHOLE FACE MESH SO THIS IS POINTLESS)
 drawing_spec = mp_drawing.DrawingSpec(color=(0, 0, 255), thickness=1,
                                       circle_radius=1)
-video = cv2.VideoCapture(fileName)  # using opencv to access camera with VideoCapture function, upload .mp4 files
+for file in glob.glob("*.mov"): #CHANGE TO MP4 IF MP4 FILE USED!!! <------------ 
+    bob = file
+video = cv2.VideoCapture(bob)  # using opencv to access camera with VideoCapture function, upload .mp4 files
+alfred = bob[:-4] + "_"
 # video.set(3, 640)    # width
 # video.set(4, 1000)    # height
 # video.set(10, 100)   # brightness
@@ -32,8 +42,16 @@ rightmvmnt_R = []
 
 def rollavg_bottlneck(a, n):  # moving average: https://www.delftstack.com/howto/python/moving-average-python/
     return bn.move_mean(a, window=n, min_count=None)
-
-
+def get_length(filename):
+            result = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
+                             "format=duration", "-of",
+                             "default=noprint_wrappers=1:nokey=1", filename],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT)
+            return float(result.stdout)
+ending = get_length(bob)
+ending = ending*2
+        
 start = time.time()
 # NOW WE ARE ENTERING THE FACEMESH
 with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detection confidences of face_mesh
@@ -135,11 +153,15 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
                 # print("RIGHT", rel_lrx)
                 cv2.circle(image, (loc_x2, loc_y2), 2, (255, 255, 255), 2)
 
+                
+
         # Display Output Image
         cv2.imshow("Face Mesh", image)
         k = cv2.waitKey(1)
-        if k == ord('q'):
-
+        # if k == ord('q'):
+        time_current = time.time() - start
+        print(time_current)
+        if k == ord('q') or time_current >= ending:
             # ELAPSED TIME CALCULATION
             end = time.time()
             elapsed = end - start
@@ -150,6 +172,14 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
             for i in range(0, len(t)):
                 t[i] = elapsed * (i / (arrlen - 1))
             # print(t)
+
+            #STORE FRAME AND NON-NORMALIZED DATA FOR ACCURATE PREDICTION
+            unfiltered_right =  np.add(rightmvmnt_L, rightmvmnt_R)
+            dfx = pd.DataFrame({"ELAPSED_SECONDS" : t, "rightmvmnt_L": rightmvmnt_L, "rightmvmnt_R": rightmvmnt_R, "RELATIVE_POSITION" : unfiltered_right})
+            dfx.to_csv((alfred+"UNFILTERED_RIGHT_EYE.csv"), index=False)
+            unfiltered_left = np.add(leftmvmnt_L, leftmvmnt_R)
+            dfy = pd.DataFrame({"ELAPSED_SECONDS" : t, "leftmvmnt_L": leftmvmnt_L, "leftmvmnt_R": leftmvmnt_R, "RELATIVE_POSITION" : unfiltered_left})
+            dfy.to_csv((alfred+"UNFILTERED_LEFT_EYE.csv"), index=False)
 
             # NORMALIZATION IMPLEMENTATION
             norm1 = np.linalg.norm(rightmvmnt_L)
@@ -162,22 +192,27 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
             normalizeL_R = leftmvmnt_R / norm4
 
             # RIGHT PUPIL MOTION CALCULATOR
-            over_all_right = rollavg_bottlneck(normalizeR_L, 5) + rollavg_bottlneck(normalizeR_R, 5)
-            df1 = pd.DataFrame({"ELAPSED_SECONDS": t, "RELATIVE_POSITION": over_all_right})
-            df1.to_csv(str(fileName) + "right_pupil_data.csv", index=False)
+            #over_all_right = rollavg_bottlneck(normalizeR_L, 5) + rollavg_bottlneck(normalizeR_R, 5)
+            over_all_right = np.add(rollavg_bottlneck(normalizeR_L, 5), rollavg_bottlneck(normalizeR_R, 5))
+            s1 = normalizeR_L + normalizeR_R
+            df1 = pd.DataFrame({"ELAPSED_SECONDS": t,"NORMALIZED": s1, "MOVING_AVG": over_all_right})
+            #name1 = alfred + "right_pupil_data.csv"
+            df1.to_csv((alfred+ "right_pupil_data.csv"), index=False)
             fig1 = plt.figure("Overall Right Eye Movement: Relative Position vs. Time Elapsed (s)")
             plt.plot(t, over_all_right, c="black", lw=2)
             plt.title("Right Pupil Movements")
-            plt.savefig(str(fileName) + "RIGHT_PUPIL_MOTION", format="png")
+            plt.savefig((alfred + "RIGHT_PUPIL_MOTION.png") , format="png")
 
             # LEFT PUPIL MOTION CALCULATOR
-            over_all_left = rollavg_bottlneck(normalizeL_L, 5) + rollavg_bottlneck(normalizeL_R, 5)
-            df = pd.DataFrame({"ELAPSED_SECONDS": t, "RELATIVE_POSITION": over_all_left})
-            df.to_csv(str(fileName) + "left_pupil_data.csv", index=False)
-            fig2 = plt.figure("Overall Left Eye Movement: Relative Position vs. Time Elapsed (s)")
+           # over_all_left = rollavg_bottlneck(normalizeL_L, 5) + rollavg_bottlneck(normalizeL_R, 5)
+            over_all_left = np.add(rollavg_bottlneck(normalizeL_L, 5),rollavg_bottlneck(normalizeL_R, 5))
+            s2 = normalizeL_L + normalizeL_R
+            df = pd.DataFrame({"ELAPSED_SECONDS": t, "NORMALIZED": s2, "MOVING_AVG": over_all_left})
+            df.to_csv((alfred + "left_pupil_data.csv"), index=False)
+            fig2 = plt.figure("Overall Left Eye Movement: RelativePosition vs. Time Elapsed (s)")
             plt.plot(t, over_all_left, c="black", lw=2)
             plt.title("Left Pupil Movements")
-            plt.savefig(str(fileName) + "LEFT_PUPIL_MOTION", format="png")
+            plt.savefig((alfred + "LEFT_PUPIL_MOTION.png"), format="png")
             plt.show()
 
             # Fourier Transform of Unfiltered Data
@@ -186,10 +221,18 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
             bakup2 = rightmvmnt_L + rightmvmnt_R + leftmvmnt_L + leftmvmnt_R  # untampered
             fft = np.fft.fft(bakup2)
             fftfreq = np.fft.fftfreq(len(bakup2))  # try t
-            print(fft)
             plt.plot(fftfreq, fft)
-            plt.show()
-
+            plt.savefig((alfred + "FFT.png"), format="png")
+            #plt.show()
+            zipObj = ZipFile((bob[:-4] + '.zip'), 'w')
+            zipObj.write((alfred+"UNFILTERED_RIGHT_EYE.csv"))
+            zipObj.write((alfred+"UNFILTERED_LEFT_EYE.csv"))
+            zipObj.write((alfred+ "right_pupil_data.csv"))
+            zipObj.write((alfred + "left_pupil_data.csv"))
+            zipObj.write((alfred + "LEFT_PUPIL_MOTION.png"))
+            zipObj.write((alfred + "RIGHT_PUPIL_MOTION.png"))
+            zipObj.write((alfred + "FFT.png"))
+            zipObj.close()
             break
     video.release()
     cv2.destroyAllWindows()

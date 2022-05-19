@@ -1,5 +1,11 @@
 #!/bin/bash
-echo PLEASE ENTER PATIENT ID. THIS SHOULD MATCH THE TITLE OF THE .MOV FILE
+count=`ls -1 *.mov 2>/dev/null | wc -l`
+if [ $count == 0 ]
+then 
+echo PLEASE PUT .mov FILE INTO project DIRECTORY AND RE-RUN execute.sh
+exit 
+fi 
+echo PLEASE ENTER PATIENT ID. THIS SHOULD MATCH THE TITLE OF THE .mov FILE
 read varname
 echo THANK YOU
 pip install pipreqs

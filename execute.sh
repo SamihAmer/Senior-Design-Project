@@ -5,6 +5,11 @@ then
 echo PLEASE PUT .mov FILE INTO project DIRECTORY AND RE-RUN execute.sh
 exit 
 fi 
+if [ $count != 1 ]
+then 
+echo PLEASE ENSURE THAT ONLY ONE .mov FILE IS IN THE project DIRECTORY AND RE-RUN execute.sh
+exit 
+fi 
 echo PLEASE ENTER PATIENT ID. THIS SHOULD MATCH THE TITLE OF THE .mov FILE
 read varname
 echo THANK YOU

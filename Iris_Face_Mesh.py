@@ -34,6 +34,8 @@ leftmvmnt_R = []
 rightmvmnt_L = []
 rightmvmnt_R = []
 
+def truncate(f, n):
+    return math.floor(f * 10 ** n) / 10 ** n
 
 def rollavg_bottlneck(a, n):  # moving average: https://www.delftstack.com/howto/python/moving-average-python/
     return bn.move_mean(a, window=n, min_count=None)
@@ -157,8 +159,9 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
         k = cv2.waitKey(1)
         # if k == ord('q'):
         time_current = time.time() - start
+        time_current = truncate(time_current, 1)
         print(time_current)
-        if k == ord('q') or time_current >= ending:
+        if k == ord('q') or time_current == ending:
             # ELAPSED TIME CALCULATION
             end = time.time()
             elapsed = end - start

@@ -9,14 +9,9 @@ import pandas as pd
 import bottleneck as bn
 import time
 import glob, os
-import subprocess
+#import subprocess
 from zipfile import ZipFile
-
-
-
-
-
-#fileName = 0 # enter 0 for live video, 'Name of File.mp4' (must be mp4) for pre-recorded video
+from moviepy.editor import VideoFileClip
 
 mp_drawing = mp.solutions.drawing_utils  # using drawing utils mediapipe solution to draw
 mp_face_mesh = mp.solutions.face_mesh  # using face_mesh mediapipe solution to apply face mesh
@@ -42,15 +37,17 @@ rightmvmnt_R = []
 
 def rollavg_bottlneck(a, n):  # moving average: https://www.delftstack.com/howto/python/moving-average-python/
     return bn.move_mean(a, window=n, min_count=None)
-def get_length(filename):
-            result = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
-                             "format=duration", "-of",
-                             "default=noprint_wrappers=1:nokey=1", filename],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT)
-            return float(result.stdout)
-ending = get_length(bob)
-ending = ending*2
+# def get_length(filename):
+#             result = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
+#                              "format=duration", "-of",
+#                              "default=noprint_wrappers=1:nokey=1", filename],
+#                 stdout=subprocess.PIPE,
+#                 stderr=subprocess.STDOUT)
+#             return float(result.stdout)
+# ending = get_length(bob)
+# ending = ending*2
+clip = VideoFileClip(bob)
+ending = clip.duration*2
         
 start = time.time()
 # NOW WE ARE ENTERING THE FACEMESH
@@ -199,8 +196,11 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
             #name1 = alfred + "right_pupil_data.csv"
             df1.to_csv((alfred+ "right_pupil_data.csv"), index=False)
             fig1 = plt.figure("Overall Right Eye Movement: Relative Position vs. Time Elapsed (s)")
-            plt.plot(t, over_all_right, c="black", lw=2)
+            plt.plot(t, over_all_right, c= "black", label = 'normalized & moving average')
+            plt.plot(t, s1, c = "red", label = 'normalized')
+            plt.plot(t, unfiltered_right, c = "green", label = 'unfiltered')
             plt.title("Right Pupil Movements")
+            plt.legend(loc="upper left")
             plt.savefig((alfred + "RIGHT_PUPIL_MOTION.png") , format="png")
 
             # LEFT PUPIL MOTION CALCULATOR
@@ -210,8 +210,11 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
             df = pd.DataFrame({"ELAPSED_SECONDS": t, "NORMALIZED": s2, "MOVING_AVG": over_all_left})
             df.to_csv((alfred + "left_pupil_data.csv"), index=False)
             fig2 = plt.figure("Overall Left Eye Movement: RelativePosition vs. Time Elapsed (s)")
-            plt.plot(t, over_all_left, c="black", lw=2)
+            plt.plot(t, over_all_left, c="black", label = 'normalized & moving average')
+            plt.plot(t, s2, c = "red", label = 'normalized')
+            plt.plot(t, unfiltered_left, c = "green", label = 'unfiltered')
             plt.title("Left Pupil Movements")
+            plt.legend(loc="upper left")
             plt.savefig((alfred + "LEFT_PUPIL_MOTION.png"), format="png")
             plt.show()
 

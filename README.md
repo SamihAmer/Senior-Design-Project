@@ -1,6 +1,7 @@
 # Senior Design NEquest Virtual Neurological Assistant 
 - This is the github repository for the code of team CSANS for our senior design project.  
 - Tweaks were made to the confidence value increased from 0.8 to 0.9, this may result in the need for ideal conditions to measure data. This can be reversed.
+- cd /Users/PUT_USERNAME_HERE/miniconda3/lib/python3.9/site-packages/mediapipe/python/solutions
 # Data Collection Protocol
 1) First, download the most recent code repository from github. This can be done either via "git clone https://github.com/SamihAmer/project" or downloading it as a zip file. You should now have a folder either named "project"  or "project-main" which houses our most recent code.
 2) Drag/drop the patient .mov file into the "project" folder. Please make sure that the patient .mov file is labeled based on a unique Patient ID. 

@@ -1,5 +1,5 @@
 #!/bin/bash
-cp ~/project/mediapipe_edits/face_mesh.py ~/miniconda3/lib/python3.9/site-packages/mediapipe/python/solutions
+cp ~/project/mediapipe_edits/face_mesh.py /Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/mediapipe/python/solutions/
 count=`ls -1 *.mov 2>/dev/null | wc -l`
 if [ $count == 0 ]
 then 

@@ -50,6 +50,7 @@ def rollavg_bottlneck(a, n):  # moving average: https://www.delftstack.com/howto
 # ending = ending*2
 clip = VideoFileClip(bob)
 ending = clip.duration*2
+ending2 = clip.duration
         
 start = time.time()
 # NOW WE ARE ENTERING THE FACEMESH
@@ -158,13 +159,14 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
         cv2.imshow("Face Mesh", image)
         k = cv2.waitKey(1)
         # if k == ord('q'):
-        time_current = time.time() - start
-        time_current = truncate(time_current, 1)
-        print(time_current)
+        time_current_a = time.time() - start
+        time_current = truncate(time_current_a, 1)
+        print("real-time: ", time_current_a/2)
         if k == ord('q') or time_current == ending:
             # ELAPSED TIME CALCULATION
             end = time.time()
-            elapsed = end - start
+            elapsed = (end - start)/2
+            #elapsed = ending2
             print("time elapsed: " + str(elapsed))
             # print(len(leftmvmnt_L), len(leftmvmnt_R), len(rightmvmnt_L), len(rightmvmnt_R))
             arrlen = len(leftmvmnt_L)

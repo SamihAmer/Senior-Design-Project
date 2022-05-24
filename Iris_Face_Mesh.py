@@ -153,6 +153,7 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
                 # print("RIGHT", rel_lrx)
                 cv2.circle(image, (loc_x2, loc_y2), 2, (255, 255, 255), 2)
 
+
                 
 
         # Display Output Image
@@ -160,9 +161,13 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
         k = cv2.waitKey(1)
         # if k == ord('q'):
         time_current_a = time.time() - start
-        time_current = truncate(time_current_a, 1)
+        cframe = video.get(cv2.CAP_PROP_POS_FRAMES) # retrieves the current frame number
+        tframe = video.get(cv2.CAP_PROP_FRAME_COUNT) # get total frame count
+        fps = video.get(cv2.CAP_PROP_FPS)  #get the FPS of the videos
+        print(cframe, tframe)
         print("real-time: ", time_current_a/2)
-        if k == ord('q') or time_current == ending:
+        print("frame number: ", cframe, "/",tframe)
+        if k == ord('q') or cframe == tframe:
             # ELAPSED TIME CALCULATION
             end = time.time()
             elapsed = (end - start)/2

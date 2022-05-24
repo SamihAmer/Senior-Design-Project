@@ -170,9 +170,9 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
         if k == ord('q') or cframe == tframe:
             # ELAPSED TIME CALCULATION
             end = time.time()
-            elapsed = (end - start)/2
-            #elapsed = ending2
-            print("time elapsed: " + str(elapsed))
+            #elapsed = (end - start)/2
+            elapsed = tframe/fps
+            print("time of .mov: " + str(elapsed))
             # print(len(leftmvmnt_L), len(leftmvmnt_R), len(rightmvmnt_L), len(rightmvmnt_R))
             arrlen = len(leftmvmnt_L)
             t = np.zeros(arrlen)

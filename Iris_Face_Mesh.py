@@ -165,7 +165,7 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
         tframe = video.get(cv2.CAP_PROP_FRAME_COUNT) # get total frame count
         fps = video.get(cv2.CAP_PROP_FPS)  #get the FPS of the videos
         print(cframe, tframe)
-        print("real-time: ", time_current_a/2)
+        print("real-time: ", time_current_a)
         print("frame number: ", cframe, "/",tframe)
         if k == ord('q') or cframe == tframe:
             # ELAPSED TIME CALCULATION

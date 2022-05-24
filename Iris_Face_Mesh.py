@@ -21,7 +21,7 @@ mp_drawing_syles = mp.solutions.drawing_styles  # this just lets us get fancy wi
 # specifications of face mesh drawing ( WE DONT WANT TO DRAW THE WHOLE FACE MESH SO THIS IS POINTLESS)
 drawing_spec = mp_drawing.DrawingSpec(color=(0, 0, 255), thickness=1,
                                       circle_radius=1)
-for file in glob.glob("*.mov"): #CHANGE TO MP4 IF MP4 FILE USED!!! <------------ 
+for file in glob.glob("*.mp4"): #CHANGE TO MP4 IF MP4 FILE USED!!! <------------ 
     bob = file
 video = cv2.VideoCapture(bob)  # using opencv to access camera with VideoCapture function, upload .mp4 files
 alfred = bob[:-4] + "_"
@@ -164,7 +164,6 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
         cframe = video.get(cv2.CAP_PROP_POS_FRAMES) # retrieves the current frame number
         tframe = video.get(cv2.CAP_PROP_FRAME_COUNT) # get total frame count
         fps = video.get(cv2.CAP_PROP_FPS)  #get the FPS of the videos
-        print(cframe, tframe)
         print("real-time: ", time_current_a)
         print("frame number: ", cframe, "/",tframe)
         if k == ord('q') or cframe == tframe:
@@ -172,7 +171,7 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
             end = time.time()
             #elapsed = (end - start)/2
             elapsed = tframe/fps
-            print("time of .mov: " + str(elapsed))
+            print("time of .mp4: " + str(elapsed))
             # print(len(leftmvmnt_L), len(leftmvmnt_R), len(rightmvmnt_L), len(rightmvmnt_R))
             arrlen = len(leftmvmnt_L)
             t = np.zeros(arrlen)

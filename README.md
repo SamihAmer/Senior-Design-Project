@@ -8,7 +8,7 @@
 1) First, download the most recent code repository from github. This can be done either via "git clone https://github.com/SamihAmer/project" or downloading it as a zip file. You should now have a folder either named "project"  or "project-main" which houses our most recent code.
 2) Drag/drop the patient .mov file into the "project" folder. Please make sure that the patient .mov file is labeled based on a unique Patient ID. 
 3) Open the terminal/command prompt and navigate into the "project" directory 
-4) Run "sh execute.sh" when in the "project" directory. This script will install all the needed dependencies and run the main python code. 
+4) Run "sh execute.sh" when in the "project" directory. This script will install all the needed dependencies and run the main python code which is Iris_Face_Mesh.py. 
 5) Enter the Patient ID into the terminal, this should match the Patient ID of the .mov file
 6) After this command is run, you will see a playback of the .mov file. Once the code is finished running a graph will pop up which you can exit. 
 7) Navigate back to the "project" folder and you will now see a newly created ZIP file which you can send to us. 

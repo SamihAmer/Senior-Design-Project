@@ -9,9 +9,12 @@ import pandas as pd
 import bottleneck as bn
 import time
 import glob, os
-#import subprocess
 from zipfile import ZipFile
 from moviepy.editor import VideoFileClip
+import itertools
+import threading
+import sys
+
 
 mp_drawing = mp.solutions.drawing_utils  # using drawing utils mediapipe solution to draw
 mp_face_mesh = mp.solutions.face_mesh  # using face_mesh mediapipe solution to apply face mesh
@@ -39,15 +42,22 @@ def truncate(f, n):
 
 def rollavg_bottlneck(a, n):  # moving average: https://www.delftstack.com/howto/python/moving-average-python/
     return bn.move_mean(a, window=n, min_count=None)
-# def get_length(filename):
-#             result = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
-#                              "format=duration", "-of",
-#                              "default=noprint_wrappers=1:nokey=1", filename],
-#                 stdout=subprocess.PIPE,
-#                 stderr=subprocess.STDOUT)
-#             return float(result.stdout)
-# ending = get_length(bob)
-# ending = ending*2
+
+done = False
+def animate():
+    for c in itertools.cycle(['.  ', '.. ',  '...', '   ']):
+        if done:
+            break
+        sys.stdout.write('\rFILE PROCESSING ' + c)
+        sys.stdout.flush()
+        time.sleep(0.5)
+    sys.stdout.write('\rDone!     \n')
+
+t = threading.Thread(target=animate)
+t.start()
+
+
+
 clip = VideoFileClip(bob)
 ending = clip.duration*2
 ending2 = clip.duration
@@ -152,26 +162,25 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
                 # print("LEFT", rel_llx)
                 # print("RIGHT", rel_lrx)
                 cv2.circle(image, (loc_x2, loc_y2), 2, (255, 255, 255), 2)
-
-
-                
-
         # Display Output Image
-        cv2.imshow("Face Mesh", image)
+        #cv2.imshow("Face Mesh", image)
         k = cv2.waitKey(1)
         # if k == ord('q'):
         time_current_a = time.time() - start
         cframe = video.get(cv2.CAP_PROP_POS_FRAMES) # retrieves the current frame number
         tframe = video.get(cv2.CAP_PROP_FRAME_COUNT) # get total frame count
         fps = video.get(cv2.CAP_PROP_FPS)  #get the FPS of the videos
-        print("real-time: ", time_current_a)
-        print("frame number: ", cframe, "/",tframe)
+        #print("real-time: ", time_current_a)
+        #print("frame number: ", cframe, "/",tframe)
+        
         if k == ord('q') or cframe == tframe:
             # ELAPSED TIME CALCULATION
+            done = True
+            print("\nframes processed: " + str(cframe) + "/" + str(tframe))
             end = time.time()
             #elapsed = (end - start)/2
             elapsed = tframe/fps
-            print("time of .mp4: " + str(elapsed))
+            print("time of .mp4: " + str(elapsed) + " vs. time to process file: " + str(end-start))
             # print(len(leftmvmnt_L), len(leftmvmnt_R), len(rightmvmnt_L), len(rightmvmnt_R))
             arrlen = len(leftmvmnt_L)
             t = np.zeros(arrlen)
@@ -225,7 +234,7 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.9,  # initializing detecti
             plt.title("Left Pupil Movements")
             plt.legend(loc="upper left")
             plt.savefig((alfred + "LEFT_PUPIL_MOTION.png"), format="png")
-            plt.show()
+            #plt.show()
 
             # Fourier Transform of Unfiltered Data
             over_all = over_all_right + over_all_left  # normalized + moving average

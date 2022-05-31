@@ -1,45 +1,29 @@
 ScreenManagement:
     IntroScreen:
-    InfoScreen:
     MainScreen:
     MotionExam:
+    Results:
 
 <IntroScreen>:
     name: "intro"
 
     BoxLayout:
         orientation: 'vertical'
-        padding: 100
+        padding: 0
         Label:
-            text: "Welcome to AEye Tracker!"
-            color: (40/255,40/255,40/255,1)
-            font_size: 40
+            text: "CSANS Eye Tracker"
+            color: (.9,.9,.9,1)
+            font_size: 120
+            size_hint: 1, .3
         Image:
             source: 'logo.png'
             size: self.texture_size
+            size_hint: 1, .5
         Button:
-            font_size: 20
-            size_hint: 1, .4
-            text: "Continue"
-            on_release: app.root.current = "info"
-
-<InfoScreen>:
-    name: "info"
-
-    BoxLayout:
-        orientation: 'vertical'
-        padding: 100
-        Label:
-            text: "Please Enter User Info:"
-            color: (40/255,40/255,40/255,1)
-            font_size: 40
-        TextInput:
-            hint_text:'Enter Patient ID'
-            size_hint_y: .2
-        Button:
-            font_size: 20
-            size_hint: 1, .4
-            text: "Continue"
+            font_size: 60
+            size_hint: .2, .1
+            pos_hint: {'center_x': 0.5}
+            text: "Begin"
             on_release: app.root.current = "main"
 
 <MainScreen>:
@@ -47,47 +31,77 @@ ScreenManagement:
 
     BoxLayout:
         orientation: 'vertical'
+        Label:
+            text: "Please ensure your entire face is within the frame."
+            color: (.9,.9,.9,1)
+            font_size: 80
+            size_hint: 1, .2
         CameraPreview:
             size: root.size
         Button:
-            font_size: 20
-            size_hint: 1,.1
+            font_size: 60
+            pos_hint: {'center_x': 0.5}
+            size_hint: .4, .1
             text: "Initiate Motion Exam"
-            on_release: app.root.current = "exam"
-        Button:
-            font_size: 20
-            size_hint: 1,.1
-            text: "Initiate Face Tracking"
-            on_release: import Iris_Face_Mesh
+            on_release:
+                app.root.current = "exam"
+                app.face_mesh()
+        # Button:
+        #     font_size: 20
+        #     size_hint: 1,.1
+        #     text: "Initiate Face Tracking"
+        #     on_release: import Iris_Face_Mesh
 
 <MotionExam>:
     name: "exam"
 
     BoxLayout:
         orientation: 'vertical'
-    Label:
-        id: label1
-        text_opacity: 1
-        text: "When Ready, Press Button To Begin Exam"
-        color: (40/255,40/255,40/255,self.text_opacity)
-        font_size: 40
-        size_hint: 1, 1
-    Button:
-        font_size: 20
-        size_hint: .2, .1
-        text: "Begin Exam"
-        on_release:
-            app.exam(ball)
-            app.test(label1)
-    Widget:
-        id: ball
-        my_pos: (0, 0)
-        my_color: (1, 0, 0, 0)
-        canvas:
-            Color:
-                rgba: self.my_color
-            Ellipse:
-                size: 25 , 25
-                angle_start: 0
-                angle_end: 360
-                pos: self.my_pos
+        # FaceMesh:
+        #     size: root.size
+        Video:
+            size_hint: 1, 1
+            source: "ball.mp4"
+            state: "play"
+        # Image:
+        #     # this is where the video will show
+        #     # the id allows easy access
+        #     id: vid
+        #     size_hint: 1, 0.6
+        #     allow_stretch: True  # allow the video image to be scaled
+        #     keep_ratio: True  # keep the aspect ratio so people don't look squashed
+        #     pos_hint: {'center_x':0.5, 'top':0.8}
+        Button:
+            font_size: 60
+            pos_hint: {'center_x': 0.5}
+            size_hint: .4, .1
+            text: "Results"
+            on_release:
+                app.root.current = "results"
+                root.manager.get_screen("results").ids.left.reload()
+                root.manager.get_screen("results").ids.right.reload()
+
+<Results>:
+    name: "results"
+
+    BoxLayout:
+        orientation: 'horizontal'
+        Image:
+            id: left
+            source: 'left_pupil.png'
+        Image:
+            id: right
+            source: 'right_pupil.png'
+
+    # Widget:
+    #     id: ball
+    #     my_pos: (0, 0)
+    #     my_color: (1, 0, 0, 0)
+    #     canvas:
+    #         Color:
+    #             rgba: self.my_color
+    #         Ellipse:
+    #             size: 25 , 25
+    #             angle_start: 0
+    #             angle_end: 360
+    #             pos: self.my_pos

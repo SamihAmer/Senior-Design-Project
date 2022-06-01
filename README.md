@@ -6,7 +6,7 @@
 - Current algorithm runs in O(2n)
 # Data Collection Protocol
 1) First, download the most recent code repository from github. This can be done either via "git clone https://github.com/SamihAmer/project" or downloading it as a zip file. You should now have a folder either named "project"  or "project-main" which houses our most recent code.
-2) Drag/drop the patient .mov file into the "project" folder. Please make sure that the patient .mov file is labeled based on a unique Patient ID. 
+2) Drag/drop the patient .mov file into the "project" folder. Please make sure that the patient .mov file is labeled based on a unique Patient ID. Run the script convert_to_mp4.sh and enter the name of the .mov file to be converted with the ".mov" excluded. Ensure that you have installed _homebrew_ and run brew install ffmpeg before running. 
 3) Open the terminal/command prompt and navigate into the "project" directory 
 4) Run "sh execute.sh" when in the "project" directory. This script will install all the needed dependencies and run the main python code which is Iris_Face_Mesh.py. 
 5) Enter the Patient ID into the terminal, this should match the Patient ID of the .mov file

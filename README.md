@@ -3,7 +3,7 @@
 - Tweaks were made to the confidence value increased from 0.8 to 0.9, this may result in the need for ideal conditions to measure data. This can be reversed.
 - PLEASE ENSURE that miniconda3 is installed to your HOME directory. If anaconda3 is desired, it will require different implementation
 - cd /Users/PUT_USERNAME_HERE/miniconda3/lib/python3.9/site-packages/mediapipe/python/solutions
-- Current algorithm runs in O(2n)
+- Current algorithm runs in O(n)
 # Data Collection Protocol
 1) First, download the most recent code repository from github. This can be done either via "git clone https://github.com/SamihAmer/project" or downloading it as a zip file. You should now have a folder either named "project"  or "project-main" which houses our most recent code.
 2) Drag/drop the patient .mov file into the "project" folder. Please make sure that the patient .mov file is labeled based on a unique Patient ID. Run the script convert_to_mp4.sh and enter the name of the .mov file to be converted to the .mp4 format with the ".mov" excluded. Ensure that you have installed _homebrew_ and run brew install ffmpeg before running. 

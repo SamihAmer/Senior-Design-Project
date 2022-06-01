@@ -52,11 +52,12 @@ class CameraPreview(Image):
         #Load frame
         ret, self.frame = self.capture.read()
         #Convert to Kivy Texture
-        buf = cv2.flip(self.frame, 0).tobytes()
+        buf = cv2.flip(self.frame, 0).tostring()
         texture = Texture.create(size=(self.frame.shape[1], self.frame.shape[0]), colorfmt='bgr')
         texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
         #Change the texture of the instance
         self.texture = texture
+    pass
 
 class BtnTextInput(BoxLayout):
     pass

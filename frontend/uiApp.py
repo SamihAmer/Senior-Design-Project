@@ -1,7 +1,10 @@
+import os
+os.environ["KIVY_VIDEO"] = "ffpyplayer"
 import kivy
 import cv2
 import ffmpeg
 import threading
+import multiprocessing
 from functools import partial
 from kivy.uix.image import Image
 from kivy.uix.button import Button
@@ -20,7 +23,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.app import App
 from kivy.properties import StringProperty
 
-window = (1080,1920)
+window = (1920,1080)
 
 Window.clearcolor = (0.1882,0.1647,0.1843,0.88)
 Window.size = window
@@ -32,39 +35,6 @@ class MainScreen(Screen):
     pass
 
 class MotionExam(Screen):
-    pass
-
-class Results(Screen):
-    pass
-
-class ScreenManagement(ScreenManager):
-    pass
-
-class CameraPreview(Image):
-    def __init__(self, **kwargs):
-        super(CameraPreview, self).__init__(**kwargs)
-        #Connect to 0th camera
-        self.capture = cv2.VideoCapture(0)
-        #Set drawing interval
-        Clock.schedule_interval(self.update, 1.0 / 30)
-    #Drawing method to execute at intervals
-    def update(self, dt):
-        #Load frame
-        ret, self.frame = self.capture.read()
-        #Convert to Kivy Texture
-        buf = cv2.flip(self.frame, 0).tostring()
-        texture = Texture.create(size=(self.frame.shape[1], self.frame.shape[0]), colorfmt='bgr')
-        texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
-        #Change the texture of the instance
-        self.texture = texture
-    pass
-
-class BtnTextInput(BoxLayout):
-    pass
-
-class uiApp(App):
-    def build(self):
-        return
     def face_mesh(self):
         import math
         import cv2  # Library to access webcam and video
@@ -314,11 +284,53 @@ class uiApp(App):
         # cv2.waitKey(1)
         self.video.release()
         cv2.destroyAllWindows()
-##    def play(self):
-##        exam = Video(source='ball.mp4', state='play')
-##    def test(self, widget, *args):
-##        anim = Animation(text_opacity=0, duration=0.1)
-##        anim.start(widget)
+    t2 = threading.Thread(target=face_mesh, args=(1,))
+    t2.start()
+
+    # b = multiprocessing.Process(target=face_mesh)
+    # b.start()
+
+class Results(Screen):
+    pass
+
+class ScreenManagement(ScreenManager):
+    pass
+
+class CameraPreview(Image):
+    def __init__(self, **kwargs):
+        super(CameraPreview, self).__init__(**kwargs)
+        #Connect to 0th camera
+        self.capture = cv2.VideoCapture(0)
+        #Set drawing interval
+        Clock.schedule_interval(self.update, 1.0 / 30)
+    #Drawing method to execute at intervals
+    def update(self, dt):
+        #Load frame
+        ret, self.frame = self.capture.read()
+        #Convert to Kivy Texture
+        buf = cv2.flip(self.frame, 0).tobytes()
+        texture = Texture.create(size=(self.frame.shape[1], self.frame.shape[0]), colorfmt='bgr')
+        texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
+        #Change the texture of the instance
+        self.texture = texture
+
+class BtnTextInput(BoxLayout):
+    pass
+
+class uiApp(App):
+    def build(self):
+        return
+
+# def open_parent():
+#     uiApp().run()
+# def open_child():
+#     app.Iris_Face_Mesh()
+#
+# if __name__ == '__main__':
+#     a = multiprocessing.Process(target=open_parent)
+#     a.start()
+#     b = multiprocessing.Process(target=open_child)
+#     b.start()
 
 
 uiApp().run()

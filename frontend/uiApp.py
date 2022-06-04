@@ -213,7 +213,7 @@ class MotionExam(Screen):
                     done = True
                     # print("\nframes processed: " + str(cframe) + "/" + str(tframe))
                     end = time.time()
-                    elapsed = (end - start)/2
+                    elapsed = (end - start)
                     print("time of .mp4: " + str(elapsed) + " vs. time to process file: " + str(end-start))
                     print(len(leftmvmnt_L), len(leftmvmnt_R), len(rightmvmnt_L), len(rightmvmnt_R))
                     arrlen = len(leftmvmnt_L)

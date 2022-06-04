@@ -36,8 +36,9 @@ ScreenManagement:
             color: (.9,.9,.9,1)
             font_size: 80
             size_hint: 1, .2
-#        CameraPreview:
-#            size: root.size
+        CameraPreview:
+            size: root.size
+            allow_stretch: 'true'
         Button:
             font_size: 60
             pos_hint: {'center_x': 0.5}
@@ -45,29 +46,20 @@ ScreenManagement:
             text: "Initiate Motion Exam"
             on_release:
                 app.root.current = "exam"
-                app.face_mesh()
-        # Button:
-        #     font_size: 20
-        #     size_hint: 1,.1
-        #     text: "Initiate Face Tracking"
-        #     on_release: import Iris_Face_Mesh
+                root.manager.get_screen("exam").face_mesh()
 
 <MotionExam>:
     name: "exam"
 
-    BoxLayout:
-        orientation: 'vertical'
-        # FaceMesh:
-        #     size: root.size
-        Button:
-            font_size: 60
-            pos_hint: {'center_x': 0.5}
-            size_hint: .4, .1
-            text: "View Results"
-            on_release:
-                app.root.current = "results"
-                root.manager.get_screen("results").ids.left.reload()
-                root.manager.get_screen("results").ids.right.reload()
+    Button:
+        font_size: 60
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        size_hint: .4, .1
+        text: "Results"
+        on_release:
+            app.root.current = "results"
+            root.manager.get_screen("results").ids.left.reload()
+            root.manager.get_screen("results").ids.right.reload()
 
 <Results>:
     name: "results"
@@ -80,16 +72,3 @@ ScreenManagement:
         Image:
             id: right
             source: 'right_pupil.png'
-
-    # Widget:
-    #     id: ball
-    #     my_pos: (0, 0)
-    #     my_color: (1, 0, 0, 0)
-    #     canvas:
-    #         Color:
-    #             rgba: self.my_color
-    #         Ellipse:
-    #             size: 25 , 25
-    #             angle_start: 0
-    #             angle_end: 360
-    #             pos: self.my_pos
